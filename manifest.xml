@@ -1,0 +1,14 @@
+<package>
+  <description brief="com760cw2_group7">
+
+     com760 Courwork 2 Group 7 Project.
+
+  </description>
+  <author>harold</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/com760cw2_group7</url>
+
+</package>
+
+
