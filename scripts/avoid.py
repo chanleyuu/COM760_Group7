@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import rospy
+from geometry_msgs.msg import Point
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
@@ -17,8 +18,8 @@ yaw_ = 0
 yaw_error_allowed_ = 5 * (math.pi / 180) # 5 degrees
 position_ = Point()
 initial_position_ = Point()
-initial_position_.x = rospy.get_param('initial_x')
-initial_position_.y = rospy.get_param('initial_y')
+initial_position_.x = rospy.get_param('x')
+initial_position_.y = rospy.get_param('y')
 initial_position_.z = 0
 desired_position_ = Point()
 desired_position_.x = rospy.get_param('des_pos_x')
@@ -29,6 +30,8 @@ state_desc_ = ['Go to point', 'wall following']
 state_ = 0
 count_state_time_ = 0 # seconds the robot is in a state
 count_loop_ = 0
+# 0 - go to point
+# 1 - wall following
 
 # callbacks
 def clbk_odom(msg):
@@ -132,8 +135,8 @@ def main():
     sub_laser = rospy.Subscriber('/group7bot/laser/scan', LaserScan, clbk_laser)
     sub_odom = rospy.Subscriber('/odom', Odometry, clbk_odom)
 
-    rospy.wait_for_service('/go_to_point_switch')
-    rospy.wait_for_service('/wall_follower_switch')
+    rospy.wait_for_service('/go_to_point')
+    rospy.wait_for_service('/follow_wall')
     rospy.wait_for_service('/gazebo/set_model_state')
 
     srv_client_go_to_point_ = rospy.ServiceProxy('/go_to_point', SetBool)
@@ -162,8 +165,7 @@ def main():
                 change_state(1)
 
         elif state_ == 1:
-            if count_state_time_ > 5 and \
-               distance_position_to_line < 0.1:
+            if count_state_time_ > 5 and distance_position_to_line < 0.1:
                 change_state(0)
 
         count_loop_ = count_loop_ + 1

@@ -5,10 +5,14 @@ from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from tf import transformations
+from std_srvs.srv import *
 
 import math
 
 pub_ = None
+active_ = False
+
+
 regions_ = {
         'right': 0,
         'fright': 0,
@@ -22,6 +26,14 @@ state_dict_ = {
     1: 'turn left',
     2: 'follow the wall',
 }
+
+def wall_follower_switch(req):
+    global active_
+    active_ = req.data
+    res = SetBoolResponse()
+    res.success = True
+    res.message = 'Done!'
+    return res
 
 def clbk_laser(msg):
     global regions_
@@ -97,33 +109,8 @@ def follow_the_wall():
     msg.linear.x = 0.5
     return msg
 
-def main():
-    msg = Twist()
-    if state_ == 0:
-        msg = find_wall()
-    elif state_ == 1:
-        msg = turn_left()
-    elif state_ == 2:
-        msg = follow_the_wall()
-        pass
-    else:
-        rospy.logerr('Unknown state!')
-                
-    pub_.publish(msg)
-    
-def server():
-    global pub_
-    
-    rospy.init_node('reading_laser')
-    
-    pub_ = rospy.Publisher('/group7bot/cmd_vel', Twist, queue_size=1)
-    
-    sub = rospy.Subscriber('/group7bot/laser/scan', LaserScan, clbk_laser)
-    
-    s = rospy.Service('follow_wall', SetBool, main)
-    rospy.spin()
-    #rate = rospy.Rate(20)
-    #while not rospy.is_shutdown():
+#def main(req):
+    #if req.data == True:
         #msg = Twist()
         #if state_ == 0:
             #msg = find_wall()
@@ -134,10 +121,43 @@ def server():
             #pass
         #else:
             #rospy.logerr('Unknown state!')
-        
+                    
         #pub_.publish(msg)
+        #return SetBoolResponse(True, "Do thee ammend thou face, and I'll ammend my life")
+    #else:
+        #return SetBoolResponse(False, "Do thee ammend thou face, and I'll ammend my life")
+    
+def server():
+    global pub_
+    
+    rospy.init_node('reading_laser')
+    
+    pub_ = rospy.Publisher('/group7bot/cmd_vel', Twist, queue_size=1)
+    
+    sub = rospy.Subscriber('/group7bot/laser/scan', LaserScan, clbk_laser)
+    
+    s = rospy.Service('follow_wall', SetBool, wall_follower_switch)
+    #rospy.spin()
+    rate = rospy.Rate(20)
+    while not rospy.is_shutdown():
+        if not active_:
+            rate.sleep()
+            continue
         
-        #rate.sleep()
+        msg = Twist()
+        if state_ == 0:
+            msg = find_wall()
+        elif state_ == 1:
+            msg = turn_left()
+        elif state_ == 2:
+            msg = follow_the_wall()
+            pass
+        else:
+            rospy.logerr('Unknown state!')
+        
+        pub_.publish(msg)
+        
+        rate.sleep()
 
 if __name__ == '__main__':
     server()

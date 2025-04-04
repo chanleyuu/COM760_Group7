@@ -17,13 +17,17 @@
 <arg name="pitch" default="0"/>
 <arg name="yaw" default="0.95"/>
 
+<arg name="des_x" default="14.8"/>
+<arg name="des_y" default="12.3"/>
+<param name="x" value="$(arg x)" />
+<param name="y" value="$(arg y)" />
+<param name="des_pos_x" value="$(arg des_x)" />
+<param name="des_pos_y" value="$(arg des_y)" />
 
 <!--use a small script called spawn_model to make a service call request to the gazebo_ros ROS node-->
-<param name="robot_description" command="$(find xacro)/xacro.py" "$(find com760cw1_b00765632)/urdf/group7bot.xacro" ></param>
-<node pkg="com760cw2_group7" type="follow_wall.py" name="followwall" output="screen"></node> 
-<node pkg="com760cw2_group7" type="go_to_point.py" name="gotopoint" output="screen"></node> 
-<node pkg="com760cw2_group7" type="avoid.py" name="pathfinder" output="screen"></node> 
+<param name="robot_description" command="$(find xacro)/xacro.py $(find com760cw2_group7)/urdf/group7bot.xacro" ></param>
 <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
       args="-urdf -model group7bot -param robot_description"></node>
+
 
 </launch>
