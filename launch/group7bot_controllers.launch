@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    
+<arg name="x" default="4.8"/>
+<arg name="y" default="2.3"/>
+<arg name="z" default="0"/>
+<arg name="roll" default="0"/>
+<arg name="pitch" default="0"/>
+<arg name="yaw" default="0.95"/>
+
+<arg name="des_x" default="14.8"/>
+<arg name="des_y" default="12.3"/>
+<param name="x" value="$(arg x)" />
+<param name="y" value="$(arg y)" />
+<param name="des_pos_x" value="$(arg des_x)" />
+<param name="des_pos_y" value="$(arg des_y)" />
+
+<node pkg="com760cw2_group7" type="avoid.py" name="pathfinder" output="screen"></node> 
+<node pkg="com760cw2_group7" type="follow_wall.py" name="followwall" output="screen"></node> 
+<node pkg="com760cw2_group7" type="go_to_point.py" name="gotopoint" output="screen"></node> 
+</launch>
