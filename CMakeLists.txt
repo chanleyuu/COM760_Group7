@@ -26,6 +26,18 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+## Generate services in the 'srv' folder
+add_service_files(
+  FILES
+  go2goal.srv
+)
+
+## Generate added messages and services with any dependencies listed here
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+
 catkin_package(CATKIN_DEPENDS roscpp rospy std_msgs message_generation)
 catkin_package()
 include_directories(

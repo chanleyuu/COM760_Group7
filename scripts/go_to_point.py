@@ -7,6 +7,7 @@ from geometry_msgs.msg import Twist, Point
 from nav_msgs.msg import Odometry
 from tf import transformations
 from std_srvs.srv import *
+from com760cw2_group7.srv import *
 
 import math
 
@@ -98,9 +99,11 @@ def done():
     pub.publish(twist_msg)
 
 def main(req):
-    global active_
+    global active_, desired_position_
     active_ = req.data
-    res = SetBoolResponse()
+    desired_position_.x = req.goal_x
+    desired_position_.y = req.goal_y
+    res = go2goalResponse()
     res.success = True
     res.message = 'Done!'
     return res
@@ -128,7 +131,7 @@ def server():
     
     sub_odom = rospy.Subscriber('/odom', Odometry, clbk_odom)
     
-    s = rospy.Service('go_to_point', SetBool, main)
+    s = rospy.Service('go_to_point', go2goal, main)
     #rospy.spin()
     rate = rospy.Rate(20)
     while not rospy.is_shutdown():

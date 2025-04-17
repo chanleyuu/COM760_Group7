@@ -9,6 +9,7 @@ from tf import transformations
 from gazebo_msgs.msg import ModelState
 from gazebo_msgs.srv import SetModelState
 from std_srvs.srv import *
+from com760cw2_group7.srv import *
 
 import math
 
@@ -100,10 +101,10 @@ def change_state(state):
     log = "state changed: %s" % state_desc_[state]
     rospy.loginfo(log)
     if state_ == 0:
-        resp = srv_client_go_to_point_(True)
+        resp = srv_client_go_to_point_(True,desired_position_.x, desired_position_.y)
         resp = srv_client_wall_follower_(False)
     if state_ == 1:
-        resp = srv_client_go_to_point_(False)
+        resp = srv_client_go_to_point_(False, desired_position_.x, desired_position_.y)
         resp = srv_client_wall_follower_(True)
         
 def distance_to_line(p0):
@@ -139,7 +140,7 @@ def main():
     rospy.wait_for_service('/follow_wall')
     rospy.wait_for_service('/gazebo/set_model_state')
 
-    srv_client_go_to_point_ = rospy.ServiceProxy('/go_to_point', SetBool)
+    srv_client_go_to_point_ = rospy.ServiceProxy('/go_to_point', go2goal)
     srv_client_wall_follower_ = rospy.ServiceProxy('/follow_wall', SetBool)
     srv_client_set_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
 
